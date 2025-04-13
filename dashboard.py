@@ -31,23 +31,18 @@ yearly_stats = idc.stats_member_yearly()
 
 # Przekształcenie danych do DataFrame
 if yearly_stats and 'stats' in yearly_stats and career_stats and 'stats' in career_stats:
-    # DataFrame z yearly stats
     yearly_df = pd.DataFrame(yearly_stats['stats'])
     yearly_df['year'] = yearly_df['year'].astype(str)  # upewniamy się, że rok to string
 
-    # DataFrame z career stats
     carreer_df = pd.DataFrame(career_stats['stats'])
     carreer_df['year'] = 'ALL TIME'  # dodajemy kolumnę "year" z wartością "ALL TIME"
 
-    # Łączenie
     combined_df = pd.concat([yearly_df, carreer_df], ignore_index=True)
 
-    # Sortujemy: najpierw najnowszy rok, potem kategorie
     combined_df['year_sort'] = combined_df['year'].apply(lambda x: 9999 if x == 'ALL TIME' else int(x))
     combined_df.sort_values(by=['year_sort', 'category'], ascending=[False, True], inplace=True)
     combined_df.drop(columns='year_sort', inplace=True)
 
-    # Wybieramy i zmieniamy nazwy kolumn
     display_columns = [
         'year', 'category', 'starts', 'wins', 'top5', 'poles',
         'avg_start_position', 'avg_finish_position', 'laps', 'laps_led',
