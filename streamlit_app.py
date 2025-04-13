@@ -14,8 +14,8 @@ if "idc" not in st.session_state:
 # Login form
 if not st.session_state.logged_in:
     st.title("iPython")
-    st.text_input("Please, enter your login", key="login_input")
-    st.text_input("Please, enter your password", type="password", key="password_input")
+    st.text_input("Please, enter your login.", key="login_input")
+    st.text_input("Please, enter your password.", type="password", key="password_input")
 
     def login_procedure():
         try:
