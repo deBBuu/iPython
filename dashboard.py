@@ -126,13 +126,24 @@ else:
 recentEvents = recent_races['races']
 newiratings = []
 oldiratings = []
+sofs = []
+incidents = []
 
+recentEvents = recent_races['races']
 for event in recentEvents:
     iRatingChange = 0
     newiratings.append(event['newi_rating'])
     oldiratings.append(event['oldi_rating'])
+    sofs.append(event['strength_of_field'])
+    incidents.append(event['incidents'])
 
-recentIratingGain = newiratings[0] -oldiratings[-1]
+recentIratingGain = newiratings[0] - oldiratings[-1]
+
+avgSOF = sum(sofs) / len(sofs)
+
+recentINC = sum(incidents) / len(incidents)
 
 st.title('Miscellaneous')
 st.write('Recent iRating Change:', recentIratingGain)
+st.write('Recent average SOF', avgSOF)
+st.write('Recent incidents', recentINC)
