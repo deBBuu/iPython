@@ -75,3 +75,49 @@ if yearly_stats and 'stats' in yearly_stats and career_stats and 'stats' in care
 
 else:
     st.warning("No stats data available.")
+
+recent_races = idc.stats_member_recent_races()
+
+if recent_races and 'races' in recent_races:
+    # Create DataFrame from the races data
+    races_df = pd.DataFrame(recent_races['races'])
+
+    # Convert session_start_time to datetime
+    races_df['session_start_time'] = pd.to_datetime(races_df['session_start_time'])
+
+    # Extract track name from the nested dictionary
+    races_df['track_name'] = races_df['track'].apply(lambda x: x['track_name'])
+
+    # Select and rename columns for display
+    display_columns = [
+        'session_start_time', 'series_name', 'track_name',
+        'start_position', 'finish_position', 'laps', 'laps_led',
+        'incidents', 'points', 'strength_of_field',
+        'oldi_rating', 'newi_rating', 'drop_race'
+    ]
+
+    races_df = races_df[display_columns]
+
+    races_df.rename(columns={
+        'session_start_time': 'Date/Time',
+        'series_name': 'Series',
+        'track_name': 'Track',
+        'start_position': 'Start Pos',
+        'finish_position': 'Finish Pos',
+        'laps': 'Laps',
+        'laps_led': 'Laps Led',
+        'incidents': 'Incidents',
+        'points': 'Points',
+        'strength_of_field': 'SOF',
+        'oldi_rating': 'Old iRating',
+        'newi_rating': 'New iRating',
+        'drop_race': 'Drop Race'
+    }, inplace=True)
+
+    # Format datetime for better display
+    races_df['Date/Time'] = races_df['Date/Time'].dt.strftime('%Y-%m-%d %H:%M')
+
+    st.title("Recent Races")
+    st.dataframe(races_df, use_container_width=True)
+else:
+    st.warning("No recent races data available.")
