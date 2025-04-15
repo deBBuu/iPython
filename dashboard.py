@@ -82,6 +82,7 @@ if recent_races and 'races' in recent_races:
     # Create DataFrame from the races data
     races_df = pd.DataFrame(recent_races['races'])
 
+
     # Convert session_start_time to datetime
     races_df['session_start_time'] = pd.to_datetime(races_df['session_start_time'])
 
@@ -121,3 +122,17 @@ if recent_races and 'races' in recent_races:
     st.dataframe(races_df, use_container_width=True)
 else:
     st.warning("No recent races data available.")
+
+recentEvents = recent_races['races']
+newiratings = []
+oldiratings = []
+
+for event in recentEvents:
+    iRatingChange = 0
+    newiratings.append(event['newi_rating'])
+    oldiratings.append(event['oldi_rating'])
+
+recentIratingGain = newiratings[0] -oldiratings[-1]
+
+st.title('Miscellaneous')
+st.write('Recent iRating Change:', recentIratingGain)
