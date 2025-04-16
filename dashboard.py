@@ -4,18 +4,44 @@ import pandas as pd
 # Assuming idc is already defined and available in session state
 idc = st.session_state.idc
 
-st.title('iRating Graph')
+st.title('Dashboard')
+
+st.header('Road iRating')
 
 # Fetching the graph data
 irgraph_data = idc.member_chart_data(category_id=2, chart_type=1)
 
+#fetchingGeneralACCDAta
+
+accountDetails = idc.member_info()
+
+if accountDetails and 'account' in accountDetails:
+    balanceData = accountDetails['account']
+    print(balanceData)
+if accountDetails and 'licenses' in accountDetails:
+    licensesData = accountDetails['licenses']
+    sportsCarData = licensesData['sports_car']
+    formulaCarData = licensesData['formula_car']
+
+ir_dollars = balanceData['ir_dollars']
+ir_credits = balanceData['ir_credits']
+roadIrating = sportsCarData['irating']
+roadSafetyRating = sportsCarData['safety_rating']
+roadClassName = sportsCarData['group_name']
+
 # Extracting only the 'when' and 'value' fields from the raw data
+import datetime
+
+date = datetime.datetime.now()
+
 if irgraph_data and 'data' in irgraph_data:
     cleaned_data = [{'when': entry['when'], 'value': entry['value']} for entry in irgraph_data['data']]
-
+    cleaned_data.append({'when': date, 'value': roadIrating})
     df = pd.DataFrame(cleaned_data)
 
     df['when'] = pd.to_datetime(df['when'])
+
+
 
     df.set_index('when', inplace=True)
 
@@ -70,7 +96,7 @@ if yearly_stats and 'stats' in yearly_stats and career_stats and 'stats' in care
         'poles_percentage': 'Poles %'
     }, inplace=True)
 
-    st.title("Combined Yearly & Career Stats")
+    st.header("Combined Yearly & Career Stats")
     st.dataframe(combined_df, use_container_width=True)
 
 else:
@@ -128,6 +154,7 @@ newiratings = []
 oldiratings = []
 sofs = []
 incidents = []
+finishPositions = []
 
 recentEvents = recent_races['races']
 for event in recentEvents:
@@ -136,6 +163,7 @@ for event in recentEvents:
     oldiratings.append(event['oldi_rating'])
     sofs.append(event['strength_of_field'])
     incidents.append(event['incidents'])
+    finishPositions.append(event['finish_position'])
 
 recentIratingGain = newiratings[0] - oldiratings[-1]
 
@@ -143,7 +171,28 @@ avgSOF = sum(sofs) / len(sofs)
 
 recentINC = sum(incidents) / len(incidents)
 
-st.title('Miscellaneous')
+avgFinishPos = sum(finishPositions) / len(finishPositions)
+
+st.header('Miscellaneous')
 st.write('Recent iRating Change:', recentIratingGain)
 st.write('Recent average SOF', avgSOF)
 st.write('Recent incidents', recentINC)
+st.write('Average finish positions:', avgFinishPos)
+
+st.write('IR dollars:', ir_dollars)
+st.write('IR credits:', ir_credits)
+
+st.subheader('Sports Car')
+
+st.write('iRating:', roadIrating)
+st.write('Safety Rating:', roadSafetyRating, roadClassName)
+
+st.subheader('Formula Cars')
+
+formulaIrating = formulaCarData['irating']
+formulaSafetyRating = formulaCarData['safety_rating']
+formulaClassName = formulaCarData['group_name']
+
+st.write('iRating:', formulaIrating)
+st.write('Safety Rating:', formulaSafetyRating, formulaClassName)
+
